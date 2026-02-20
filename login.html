@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MiTienda Demo</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --light: #f1f5f9;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--light); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { text-align: center; color: var(--dark); margin-bottom: 1.5rem; }
+
+        .form-group { margin-bottom: 1rem; }
+        
+        label { display: block; margin-bottom: 0.5rem; color: #64748b; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box; /* Evita que el input se salga del card */
+        }
+
+        button {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        button:hover { background: #1d4ed8; }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="email" placeholder="admin@tienda.com" required>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit">Entrar</button>
+            <p id="errorMessage" class="error-msg">Credenciales incorrectas. Intenta de nuevo.</p>
+        </form>
+        <a href="index.html" class="back-link">← Volver a la tienda</a>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // LÓGICA DE DEMO: 
+            // Definimos que tú eres el admin con estos datos:
+            if(email === 'admin@tienda.com' && password === '123456') {
+                alert('¡Bienvenido, Dueño!');
+                window.location.href = 'admin.html'; 
+            } else {
+                alert('Login exitoso como Cliente');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

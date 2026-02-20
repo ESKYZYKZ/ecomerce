@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Dueño</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --success: #22c55e;
+            --bg: #f8fafc;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); display: flex; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+        }
+
+        .sidebar h2 { color: var(--primary); font-size: 1.2rem; }
+        .sidebar hr { border: 0; border-top: 1px solid #334155; margin: 20px 0; }
+        .sidebar a { color: white; text-decoration: none; display: block; padding: 10px 0; transition: 0.3s; }
+        .sidebar a:hover { color: var(--primary); }
+
+        /* Contenido */
+        .main-content { margin-left: 300px; padding: 40px; width: 100%; max-width: 900px; }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h3 { margin-top: 0; color: var(--dark); }
+
+        /* Formularios */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .btn-action {
+            grid-column: span 2;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Tablas */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; background: #f1f5f9; padding: 12px; color: #475569; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🛍️ MiTienda Admin</h2>
+        <p>Sesión: <strong>Dueño</strong></p>
+        <hr>
+        <a href="index.html">🏠 Ver Tienda</a>
+        <a href="#" onclick="alert('Cerrando sesión...')">🚪 Salir</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Dashboard Administrativo</h1>
+
+        <div class="card">
+            <h3>👥 Registrar Nuevo Usuario</h3>
+            <div class="form-grid">
+                <input type="text" id="userName" placeholder="Nombre completo">
+                <input type="email" id="userEmail" placeholder="Correo electrónico">
+                <select id="userRole">
+                    <option value="Admin">Administrador</option>
+                    <option value="Vendedor">Vendedor</option>
+                    <option value="Cliente">Cliente VIP</option>
+                </select>
+                <button class="btn-action" onclick="addUser()">Añadir a la lista</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📋 Usuarios con acceso</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody id="userList">
+                    <tr>
+                        <td>Tú (Dueño)</td>
+                        <td>admin@tienda.com</td>
+                        <td><span class="badge">Master Admin</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>📦 Cargar Producto</h3>
+            <div class="form-grid">
+                <input type="text" id="prodName" placeholder="Nombre del Producto" class="full-width">
+                <input type="number" id="prodPrice" placeholder="Precio ($)">
+                <input type="file" id="prodImg" accept="image/*">
+                <button class="btn-action" style="background: var(--success);" onclick="alert('Producto guardado en la demo')">Publicar Producto</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // 1. Cargar usuarios al iniciar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarUsuarios();
+    });
+
+    function addUser() {
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const role = document.getElementById('userRole').value;
+
+        if(name && email) {
+            const nuevoUsuario = {
+                nombre: name,
+                correo: email,
+                rol: role
+            };
+
+            // Obtener lista actual de localStorage o crear una vacía
+            let usuarios = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
+            
+            // Guardar el nuevo usuario
+            usuarios.push(nuevoUsuario);
+            localStorage.setItem('usuariosRegistrados', JSON.stringify(usuarios));
+
+            // Actualizar la tabla visualmente
+            mostrarUsuarioEnTabla(nuevoUsuario);
+
+            // Limpiar campos
+            document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
+            alert('Usuario guardado permanentemente en la demo.');
+        } else {
+            alert('Por favor, completa nombre y correo.');
+        }
+    }
+
+    function cargarUsuarios() {
+        const usuarios = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
+        usuarios.forEach(user => {
+            mostrarUsuarioEnTabla(user);
+        });
+    }
+
+    function mostrarUsuarioEnTabla(user) {
+        const tbody = document.getElementById('userList');
+        const newRow = `
+            <tr>
+                <td>${user.nombre}</td>
+                <td>${user.correo}</td>
+                <td><span class="badge" style="background:#e0e7ff; color:#3730a3;">${user.rol}</span></td>
+            </tr>
+        `;
+        tbody.innerHTML += newRow;
+    }
+
+    // --- Lógica de Productos (La que ya tenías) ---
+    function publicarProducto() {
+        const nombre = document.getElementById('prodName').value;
+        const precio = document.getElementById('prodPrice').value;
+        const imagenInput = document.getElementById('prodImg');
+
+        if (!nombre || !precio || !imagenInput.files[0]) {
+            alert("Completa todos los datos del producto");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const nuevoProducto = {
+                nombre: nombre,
+                precio: precio,
+                imagen: e.target.result
+            };
+            let productos = JSON.parse(localStorage.getItem('misProductos')) || [];
+            productos.push(nuevoProducto);
+            localStorage.setItem('misProductos', JSON.stringify(productos));
+            alert("¡Producto publicado!");
+            location.reload();
+        };
+        reader.readAsDataURL(imagenInput.files[0]);
+    }
+    
+    // Conectar el botón de productos
+    const btnProd = document.querySelector('button[style*="success"]');
+    if(btnProd) btnProd.onclick = publicarProducto;
+</script>
+
+</body>
+</html>
